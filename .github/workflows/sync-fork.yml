@@ -1,0 +1,53 @@
+name: Sync Fork
+
+on:
+  schedule:
+    # Run every day at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  sync-fork:
+    runs-on: ubuntu-latest
+    name: Sync fork with upstream
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+        
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/langgenius/dify-official-plugins.git
+          echo "✅ Added upstream remote repository"
+        
+      - name: Fetch latest changes
+        run: |
+          git fetch upstream
+          echo "✅ Fetched latest changes from upstream"
+        
+      - name: Merge changes
+        run: |
+          echo "🔄 Attempting to merge upstream/main into local main branch"
+          if git merge upstream/main --no-commit; then
+            echo "✅ Successfully merged changes from upstream"
+          else
+            echo "⚠️ Merge conflicts detected"
+            git merge --abort
+            echo "❌ Merge aborted to prevent conflicts"
+            exit 1
+          fi
+        
+      - name: Push changes
+        run: |
+          echo "🔄 Pushing changes to origin"
+          git push origin main
+          echo "✅ Successfully pushed changes to fork"

@@ -7,12 +7,20 @@ on:
       - main
       - dev
     paths-ignore:
+      - "**"
       - "migrations/**"
       - ".scripts/**"
       - ".github/**"
       - ".gitignore"
       - "README.md"
       - "LICENSE"
+      - "**/_assets/**"
+      - "**/*.md"
+      - "**/PRIVACY.md"
+      - "**/GUIDE.md"
+      - "**/LICENSE.md"
+      - "**/.difyignore"
+      - "**/.env.example"
 
 env:
   REPO_NAME: langgenius/dify-official-plugins
@@ -71,7 +79,19 @@ jobs:
             exit 1
           fi
 
+      - name: Check If Changes Are Substantial
+        run: |
+          export PR_FILES=$(gh pr view -R ${{ env.REPO_NAME }} ${{ github.event.pull_request.number }} --json files --jq '.files[].path')
+          
+          # Run the check-substantial-changes.py script
+          CHANGES_SUBSTANTIAL=$(uv run python .scripts/validator/check-substantial-changes.py $PR_FILES)
+          echo "Changes substantial: $CHANGES_SUBSTANTIAL"
+          
+          # Set environment variable based on the script output
+          echo "SKIP_VERSION_CHECK=$(if [ "$CHANGES_SUBSTANTIAL" = "false" ]; then echo "true"; else echo "false"; fi)" >> $GITHUB_ENV
+
       - name: Check If Version Exists
+        if: ${{ env.SKIP_VERSION_CHECK == 'false' }}
         run: |
           # get version, author, name
           VERSION=$(yq '.version' ${{ env.PLUGIN_PATH }}/manifest.yaml)

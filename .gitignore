@@ -187,3 +187,8 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/python
 mypy.ini
 tox.ini
+
+# Clacky-related configuration
+.1024*
+!.1024
+.breakpoints
