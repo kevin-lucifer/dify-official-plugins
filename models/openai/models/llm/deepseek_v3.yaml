@@ -1,0 +1,43 @@
+model_name: deepseek-v3-chat
+model_type: llm
+model_display: DeepSeek V3 Chat
+model_family: deepseek_v3
+model_provider: openai
+model_capability:
+  completion: true
+  chat: true
+  stream: true
+  agent_thought: true
+parameter_rules:
+  max_tokens:
+    max: 4096
+    min: 1
+    default: 512
+  temperature:
+    max: 2.0
+    min: 0.0
+    default: 1.0
+    precision: 2
+  top_p:
+    max: 1.0
+    min: 0.0
+    default: 1.0
+    precision: 2
+  frequency_penalty:
+    max: 2.0
+    min: -2.0
+    default: 0.0
+    precision: 2
+  presence_penalty:
+    max: 2.0
+    min: -2.0
+    default: 0.0
+    precision: 2
+model_schema:
+  parameters_schema: {}
+pricing:
+  input: 0.0000015
+  output: 0.000015
+context_size: 64000
+base_model: deepseek-v3-chat
+description: DeepSeek V3 is a large language model with 64k context length offering advanced reasoning capabilities and knowledge cutoff with improved performance over previous versions.
